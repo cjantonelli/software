@@ -74,7 +74,6 @@ int main(int argc, char **argv)
 	MPI_Bcast(cmdbuf, cmdsize, MPI_CHAR, 0, MPI_COMM_WORLD);
 
 	// execute command and collect its standfard output
-fprintf(stderr, "%d: &cmdbuf=%p cmdsize=%d cmdbuf=%s\n", myid, cmdbuf, cmdsize, cmdbuf);
 	sprintf(lilbuf,"%d", myid+1);
 	if (setenv("PBS_ARRAY_ID", lilbuf, 1) < 0)
 		err(1, "setenv");
