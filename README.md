@@ -18,7 +18,7 @@ This code uses the MPI library and environment.  You build this code with someth
 
     mpicc -o rapcat rapcat.c
 
-You run it wuth something like
+You run it with something like
 
     mpirun -np 1024 rapcat R CMD BATCH --vanilla Rtest.R >my_output
 
