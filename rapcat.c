@@ -76,7 +76,9 @@ int main(int argc, char **argv)
 	// execute command and collect its standfard output
 	sprintf(lilbuf,"%d", myid+1);
 	if (setenv("PBS_ARRAY_ID", lilbuf, 1) < 0)
-		err(1, "setenv");
+		err(1, "setenv PBS_ARRAY_ID");
+	if (setenv("SLURM_ARRAY_TASK_ID", lilbuf, 1) < 0)
+		err(1, "setenv SLURM_ARRAY_TASK_ID");
 	pfd = popen(cmdbuf, "r");
 	if ((myray = malloc(myraysize*sizeof(char))) < 0)
 		err(1, "myray malloc");
