@@ -2,6 +2,27 @@
 
 Generally useful software.
 
+### burn
+
+//  burn t cpu seconds on c cores while holding m GB virtual memory
+//  of which r% is resident
+
+You build this code with something like
+
+    gcc burn.c -o burn -lpthread
+
+You run it with something like
+
+    burn -c 2 -t 90 -m 8 -r 25
+
+This invocation of burn will consume 100% of each of two cores for ninety
+seconds while holding 8 GB of virtual memory, 25% of which is residing in
+physical memory.  Invoking
+
+    burn -h
+
+will list the built-in defaults for these values.
+
 ### rapcat
 
     // written to replace array job with mpi rank execution of R code

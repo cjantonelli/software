@@ -28,7 +28,7 @@ usage(char *name)
 
 
 void *
-loop()
+loop(void *arg)
 
 {
 	for (;;)
@@ -53,6 +53,7 @@ main(int argc, char **argv)
 	int i, opt, cores = 1, mem = 1, touch = 0;
 	pthread_t t;
 
+	// parse arguments
 	while ((opt = getopt(argc, argv, "c:hm:r:t:?")) != -1) {
 		switch (opt) {
 		case 'c':
@@ -80,29 +81,41 @@ main(int argc, char **argv)
 			exit(EXIT_FAILURE);
                }
 	}
-
 	printf("%s:  burning for %d sec on %d cores holding %d GB %d%% resident memory\n", argv[0], secs, cores, mem, touch);
 
+	// suppress any attempted core dumps
 	if (setrlimit(RLIMIT_CORE, &rl) < 0)
 		warn("setrlimit");
 
+	// allocate requested virtual memory
 	memsiz = mem * (size_t)1024*1024*1024;
-
 	if (!(p = malloc(memsiz)))
 		errx(1, "malloc(%lld) failed", memsiz);
 
+	// bring requested percentage of virtual memory into physical memory
+	// by writing one byte into that percentage of the allocated pages of
+	// virtual memory, which page faults those pages into physical memory.
+	// in the absence of swapping, those pages should remain in physical
+	// memory, but no attempt is made to enforce this.
 	if (touch)
 		for (i = 0; i<(memsiz/getpagesize())*touch/100; i++, p += getpagesize())
 			*p = i & 0xff;
 
+	// start the requested number of cores' worth of threads, less one,
+	// each of which is bound to a core and executes an endless loop.
 	for (i = 1; i < cores; i++)
 		if (pthread_create(&t, NULL, &loop, NULL))
 			err(1, "pthread_create");
 
+	// set an alarm signal handler, then set an alarm to go off the
+	// requested number of seconds from now.  the alarm signal invokes
+	// the handler, which simply exits.
 	if (signal(SIGALRM, handler))
 		err(1, "signal");
 	if (alarm(secs) < 0)
 		err(1, "alarm");
 
-	loop();
+	// until the alarm goes off, the main thread executes the same
+	// endless loop, consuming the remaining core.
+	loop(NULL);
 }
