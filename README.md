@@ -4,8 +4,8 @@ Generally useful software.
 
 ### burn
 
-//  burn t cpu seconds on c cores while holding m GB virtual memory
-//  of which r% is resident
+    //  burn t cpu seconds on c cores while holding m GB virtual memory
+    //  of which r% is resident
 
 You build this code with something like
 
