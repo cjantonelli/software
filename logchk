@@ -16,7 +16,7 @@ bflag=false
 let bti=3
 
 OPTLIST="Ddfhlmnru"
-dflag=false hflag=false mflag=false nflag=false rflag=false uflag=false debug=false
+dflag=false fflag=false hflag=false mflag=false nflag=false rflag=false uflag=false debug=false
 
 usage()
 {
