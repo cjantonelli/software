@@ -45,3 +45,33 @@ You run it with something like
 
 ... and instead of creating 1,024 output files you create one large one, which contains the
 rank outputs in rank order.
+
+### logchk
+
+    # check if users have a login on the machine on which logchk is run, and prompt them to
+    # get one if not.
+    #
+    # also checks if they have a SLURM account, and other specific processing.
+
+THis is a specific-purpose script, and will need modification for other applications.
+
+You run the script by preparing an input file of user id's, one per line.  The file is
+named something like
+
+    hpc101_20191010.txt
+
+where "hpc101" is the short name for the course, and "20191010" is the date this session
+is taught.  The course number is optional, as is the date and its preceding underscore.
+
+To add a course, add a line similar to the following to the course validation case statement:
+
+    mycourse) CLASSNAME="my favorite course"; REASON="you need an account";;
+
+where CLASSNAME is the long name of the course, and REASON is the phrase
+justifying why the user is getting the notification email.  Alternatively, the
+-m argument can be used to stop the script from checking that the short course
+name is known and fron obtaining course name or date taught from the input file
+name; logchk will use generic language for the notification.
+
+Use the -d argument to send a single email to yourself instead of the
+student, so you can examine the email before sending to everyone.

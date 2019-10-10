@@ -15,7 +15,7 @@ let nologin=0 noaccount=0 mailed=0 okay=0
 bflag=false
 let bti=3
 
-OPTLIST="dhlmnru"
+OPTLIST="Ddfhlmnru"
 dflag=false hflag=false mflag=false nflag=false rflag=false uflag=false debug=false
 
 usage()
@@ -23,18 +23,24 @@ usage()
 	cat <<EOF
 usage:	$1 [-$OPTLIST] [uniqnamelist.txt]
 	-d:	dry run (send any email to you, and exit after the first such)
+	-f:	force email to be sent (dry run only)
 	-h:	show help
 	-l:	list course numbers and names, then exit
 	-m:	don't mine course information from filename
 	-n:	don't send any email at all
 	-r:	relax; don't use any urgent language
 	-u:	use more urgent language
+	-D:	debug mode (for testing only)
 EOF
 }
 
 while getopts $OPTLIST OPT; do
 	  case $OPT in
+		D)	debug=true
+			;;
 		d)	dflag=true
+			;;
+		f)	fflag=true
 			;;
 		h)	usage `basename $0`
 			exit 0
@@ -62,12 +68,17 @@ if [ $nflag = true -a $dflag = true ]; then
 	exit 1
 fi
 
+if [ $fflag = true -a $dflag = false ]; then
+	echo -f forces -d.
+	dflag=true
+fi
+
 if [ $# -gt 0 ]; then F=$1; else F=$0.uniq; echo Using default input file \"$F\" ...; fi
 
 if [ ! -r "$F" ]; then echo Can\'t read input file \"$F\" ... quitting; exit 1; fi
 
 if [ $mflag = false ]; then
-	CLASSABBR=`expr "$F" : '\([^_]*\)'`
+	CLASSABBR=`expr "$F" : '\([^_\.]*\)'`
 	case $CLASSABBR in
 		hpc100) CLASSNAME="Introduction to the Linux Command line";;
 		hpc101) CLASSNAME="Introduction to the Flux cluster and batch computing";;
@@ -157,7 +168,8 @@ while true; do
 	IFS=$IFS, read -a UL
 	if test -z "$UL"; then break; fi
 	for U in ${UL[*]}; do
-		if ! id $U; then
+		id $U
+		if [ $? != 0 -o $fflag = true ]; then
 			echo
 			let ++nologin
 			if [ $mflag = true ]; then
@@ -198,10 +210,12 @@ Looking forward to seeing you at the session,
 The HPC Training Team
 EOF
 				if [ $? -eq 0 ]; then
-					let ++mailed
-					echo Mail sent to $U.
+					if [ "$PROC" != cat ]; then
+						let ++mailed
+						echo Mail sent to $U.
+					fi
 				else
-					echo Problem with sending mail, mail NOT sent to $U ... quitting
+					echo Problem with $PROC, mail NOT sent to $U ... quitting
 					exit 1
 				fi
 				if [ $dflag = true ]; then
