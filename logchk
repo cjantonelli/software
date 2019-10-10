@@ -8,7 +8,7 @@ CLNAME="Great Lakes"
 CLFORM="https://myumi.ch/3qDWB"
 REGMAIL=hpc-course
 COURSEMAIL=hpc-course
-REASON="you do not yet appear to have a $CLNAME login account, without which you cannot login to $CLNAME."
+REASON="we'll be covering computing on the $CLNAME cluster"
 
 let nologin=0 noaccount=0 mailed=0 okay=0
 
@@ -88,7 +88,7 @@ if [ $mflag = false ]; then
 		hpc201) CLASSNAME="Advanced batch computing on the Flux cluster";;
 		hpc204) CLASSNAME="Advanced batch computing with SLURM on the Great Lakes cluster";;
 		stats) CLASSNAME="Stats Student Orientation: Flux review"; REASON="you've been invited to attend tomorrow's computing workshop meant to introduce Department of Statistics graduate students to the $CLNAME computing cluster";;
-		biophys435) CLASSNAME="BIOPHYS 435"; REASON="we'll be covering computing on the Great Lakes cluster during the 10/17 lecture";;
+		biophys435) CLASSNAME="BIOPHYS 435"; REASON="we'll be covering computing on the $CLNAME cluster during the 10/17 lecture";;
 		*) echo Unknown course \"$CLASSABBR\" ... quitting; exit 1;;
 	esac
 	CLASSYR=`expr "$F" : '[^_]*_\(20[0-9][0-9]\)'`
