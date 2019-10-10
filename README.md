@@ -53,7 +53,7 @@ rank outputs in rank order.
     #
     # also checks if they have a SLURM account, and other specific processing.
 
-THis is a specific-purpose script, and will need modification for other applications.
+This is a specific-purpose script, and will need modification for other applications.
 
 You run the script by preparing an input file of user id's, one per line.  The file is
 named something like
