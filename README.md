@@ -4,7 +4,7 @@ Generally useful software.
 
 ### burn
 
-    //  burn s cpu seconds on each of t threads while holding m GB virtual
+    // burn s cpu seconds on each of t threads while holding m GB virtual
     // memory of which r% is resident
 
 You build this code with something like
@@ -26,8 +26,8 @@ will list the built-in defaults for these values.
 
 ### burn_mpi
 
-//  burn s cpu seconds in t threads while holding m GB virtual memory
-//  of which r% is resident per MPI rank
+    //  burn s cpu seconds in t threads while holding m GB virtual memory
+    //  of which r% is resident per MPI rank
 
 This code is the MPI version of burn.  You invoke it with something like
 
