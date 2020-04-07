@@ -4,8 +4,8 @@ Generally useful software.
 
 ### burn
 
-    //  burn t cpu seconds on c cores while holding m GB virtual memory
-    //  of which r% is resident
+    //  burn s cpu seconds on each of t threads while holding m GB virtual
+    // memory of which r% is resident
 
 You build this code with something like
 
@@ -13,15 +13,37 @@ You build this code with something like
 
 You run it with something like
 
-    burn -c 2 -t 90 -m 8 -r 25
+    burn -t 2 -s 90 -m 8 -r 25
 
-This invocation of burn will consume 100% of each of two cores for ninety
+This invocation of burn will consume 100% of each of two threads for ninety
 seconds while holding 8 GB of virtual memory, 25% of which is residing in
 physical memory.  Invoking
 
     burn -h
 
 will list the built-in defaults for these values.
+
+
+### burn_mpi
+
+//  burn s cpu seconds in t threads while holding m GB virtual memory
+//  of which r% is resident per MPI rank
+
+This code is the MPI version of burn.  You invoke it with something like
+
+    mpirun -n 8 ./burn_mpi -t 2 -s 90 -m 8 -r 25
+
+This will consume 100% of each of each two threads for ninety seconds in
+each of 8 MPI ranks, with each rank holding 8 GB of virtual memory, 25%
+of which is residing in physical memory.
+
+If your mpirun binds all threads to a single core, use the following instead
+
+    mpirun -n 8 taskset -a -c 0-1023 ./burn_mpi -t 2 -s 90 -m 8 -r 25
+
+Here 1023 should be larger than the number of cores on any host, and
+appears to be the current maximum mpirun allows.
+
 
 ### rapcat
 
