@@ -10,7 +10,7 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
-//  burn t cpu seconds on c cores while holding m GB virtual memory
+//  burn t cpu seconds in t threads while holding m GB virtual memory
 //  of which r% is resident
 
 
@@ -18,11 +18,11 @@ void
 usage(char *name)
 {
 	fprintf(stderr,\
-	"Usage: %s [-c cores] [-m memory] [-r percent] [-t secs]\
-	\n\t-c c\tconsume c cores, default 1\
+	"Usage: %s [-m memory] [-r percent] [-s secs] [-t threads]\
 	\n\t-m m\tconsume m GB, default 1\
 	\n\t-r r\tforce r%% resident memory, default 0%%\
-	\n\t-t t\tconsume t seconds, default 60\n",\
+	\n\t-s s\tconsume s seconds, default 60\
+	\n\t-t t\tconsume t threads, default 1\n",\
 	name);
 }
 
@@ -50,16 +50,12 @@ main(int argc, char **argv)
 	size_t memtot = 0, memsiz;
 	char *p, *myname = basename(argv[0]);
 	unsigned int secs = 60;
-	int i, opt, cores = 1, mem = 1, touch = 0;
+	int i, opt, threads = 1, mem = 1, touch = 0;
 	pthread_t t;
 
 	// parse arguments
-	while ((opt = getopt(argc, argv, "c:hm:r:t:?")) != -1) {
+	while ((opt = getopt(argc, argv, "hm:r:s:t:?")) != -1) {
 		switch (opt) {
-		case 'c':
-			if ((i = atoi(optarg)) > 0)
-				cores = i;
-			break;
 		case 'm':
 			if ((i = atoi(optarg)) > 0)
 				mem = i;
@@ -72,16 +68,20 @@ main(int argc, char **argv)
 			else
 				touch = i;
 			break;
-		case 't':
+		case 's':
 			if ((i = atoi(optarg)) >= 0)
 				secs = i;
 			break;
+		case 't':
+			if ((i = atoi(optarg)) > 0)
+				threads = i;
+			break;
 		default:
-			usage(argv[0]);
+			usage(myname);
 			exit(EXIT_FAILURE);
                }
 	}
-	printf("%s:  burning for %d sec on %d cores holding %d GB %d%% resident memory\n", argv[0], secs, cores, mem, touch);
+	printf("%s:  burning for %d sec on %d threads with %d GB %d%% resident memory\n", myname, secs, threads, mem, touch);
 
 	// suppress any attempted core dumps
 	if (setrlimit(RLIMIT_CORE, &rl) < 0)
@@ -101,9 +101,9 @@ main(int argc, char **argv)
 		for (i = 0; i<(memsiz/getpagesize())*touch/100; i++, p += getpagesize())
 			*p = i & 0xff;
 
-	// start the requested number of cores' worth of threads, less one,
-	// each of which is bound to a core and executes an endless loop.
-	for (i = 1; i < cores; i++)
+	// start the requested number of threads, less one, and
+	// execute an endless loop in each.
+	for (i = 1; i < threads; i++)
 		if (pthread_create(&t, NULL, &loop, NULL))
 			err(1, "pthread_create");
 
