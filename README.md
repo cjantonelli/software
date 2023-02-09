@@ -67,3 +67,29 @@ You run it with something like
 
 ... and instead of creating 1,024 output files you create one large one, which contains the
 rank outputs in rank order.
+
+### delta
+
+    # show differences between two text files of columnar real numbers
+    # with -r, prefix with record number
+    # with -s, output only summary lines
+
+You give delta two text files of columnar floating point data, and delta will show you the differences as well as the values with the largest and the next-largest differences.
+
+For example,
+
+% cat t1
+1.1 2.3 3.14
+1.1 2.31 3.14
+1.1 2.3 3.14
+% cat t2
+1.1 2.3 3.14
+1.1 2.3 3.14
+1.1 2.3 3.14159
+% delta t1 t2
+ -  -  -
+ -  0.01  -
+ -  -  0.00159
+7 matches 2 deltas 3 records
+max delta 0.01 at record 2 column 2
+next largest delta 0.00159 at record 3 column 3
