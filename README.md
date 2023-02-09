@@ -78,18 +78,18 @@ You give delta two text files of columnar floating point data, and delta will sh
 
 For example,
 
-% cat t1
-1.1 2.3 3.14
-1.1 2.31 3.14
-1.1 2.3 3.14
-% cat t2
-1.1 2.3 3.14
-1.1 2.3 3.14
-1.1 2.3 3.14159
-% delta t1 t2
- -  -  -
- -  0.01  -
- -  -  0.00159
-7 matches 2 deltas 3 records
-max delta 0.01 at record 2 column 2
-next largest delta 0.00159 at record 3 column 3
+    % cat t1
+    1.1 2.3 3.14
+    1.1 2.31 3.14
+    1.1 2.3 3.14
+    % cat t2
+    1.1 2.3 3.14
+    1.1 2.3 3.14
+    1.1 2.3 3.14159
+    % delta t1 t2
+     -  -  -
+     -  0.01  -
+     -  -  0.00159
+    7 matches 2 deltas 3 records
+    max delta 0.01 at record 2 column 2
+    next largest delta 0.00159 at record 3 column 3
