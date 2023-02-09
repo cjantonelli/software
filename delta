@@ -4,6 +4,23 @@
 # with -r, prefix with record number
 # with -s, output only summary lines
 
+# This script will allow you to compare two text files consisting of
+# columns of floating-point values. Such files are commonly output
+# by HPC and other applications. When porting such applications to
+# new platforms it is useful to compare the outputs with those produced
+# on a standard, or reference, platform. For each pair of corresponding
+# values in the two input files, this script will show the arithmetic
+# difference if they are not identical, or a "-" character otherwise.
+# This provides an easier way to compare the outputs visually and
+# skip over sequences of identical outputs quickly, and thereby
+# concentrate on those values that are different.
+
+# This script will also show summary output at the bottom that shows
+# the total number of data elements that matched and did not match
+# for the number of records processed, the max(imum) delta (the largest
+# difference found between elements of the file), and the pen(ultimate)
+# delta (the second-largest difference).
+
 # cja, 6 feb 2018
 
 eflag=1
@@ -24,4 +41,4 @@ done
 	
 if [ $# -ne 2 ]; then echo -e "Usage:\t`basename $0` [-r] [-s] left right\n\t-r   prefix with record number\n\t-s   output only summary lines"; exit 1; fi
 
-gawk "function min(a,b) {if (a<b) return a; else return b;} function abs(x) {if (x>0) return x; else return -x;} BEGIN {mis = 0; mat = 0; mdif = 0; pmdif = 0} {left=\$0; NFL=NF; if ((rc = getline<\"$2\")<0) {print \"unable to open $2\"; ++mis; nextfile} else if (rc==0) {print \"right shorter than left\"; ++mis; nextfile} right=\$0; NFR=NF; split(left, lefts, \" \", lseps); split(right, rights, \" \", rseps); if ($rflag && $eflag) printf(\"%6d: \", NR); for (i=1; i<=min(NFL,NFR); i++) if (lefts[i] == rights[i]) {mat++; if ($eflag) printf(\" - \");} else {mis++; dif = abs(lefts[i]-rights[i]); if (dif < $maxcut) if (dif>=mdif) {pmdif = mdif; pmdifc = mdifc; pmdifr = mdifr; mdif = dif; mdifc = i; mdifr=NR} else if (dif>pmdif) {pmdif = dif; pmdifc = i; pmdifr = NR} if ($eflag) printf(\" %lg \", abs(lefts[i]-rights[i]));} if ($eflag) printf(\"\n\");} END {if (getline<\"$2\">0) {print \"left shorter than right\"; ++mis} print mat, \"matches\", mis, \"deltas\", NR, \"records\"; if (mdif>0) print \"max delta\", mdif, \"at record\", mdifr, \"column\", mdifc; if (pmdif>0) print \"next largest delta\", pmdif, \"at record\", pmdifr, \"column\", pmdifc; if (NFL!=NFR) print \"Warning:  NFL=\" NFL \", NFR=\" NFR; exit mis}" $1
+gawk "function min(a,b) {if (a<b) return a; else return b;} function abs(x) {if (x>0) return x; else return -x;} BEGIN {mis = 0; mat = 0; mdif = 0; pmdif = 0} {left=\$0; NFL=NF; if ((rc = getline<\"$2\")<0) {print \"unable to open $2\"; ++mis; nextfile} else if (rc==0) {print \"right shorter than left\"; ++mis; nextfile} right=\$0; NFR=NF; split(left, lefts, \" \", lseps); split(right, rights, \" \", rseps); if ($rflag && $eflag) printf(\"%6d: \", NR); for (i=1; i<=min(NFL,NFR); i++) if (lefts[i] == rights[i]) {mat++; if ($eflag) printf(\" - \");} else {mis++; dif = abs(lefts[i]-rights[i]); if (dif < $maxcut) if (dif>=mdif) {pmdif = mdif; pmdifc = mdifc; pmdifr = mdifr; mdif = dif; mdifc = i; mdifr=NR} else if (dif>pmdif) {pmdif = dif; pmdifc = i; pmdifr = NR} if ($eflag) printf(\" %lg \", abs(lefts[i]-rights[i]));} if ($eflag) printf(\"\n\");} END {if (getline<\"$2\">0) {print \"left shorter than right\"; ++mis} print mat, \"matches\", mis, \"deltas\", NR, \"records\"; if (mdif>0) print \"max delta\", mdif, \"at record\", mdifr, \"column\", mdifc; if (pmdif>0) print \"pen delta\", pmdif, \"at record\", pmdifr, \"column\", pmdifc; if (NFL!=NFR) print \"Warning:  NFL=\" NFL \", NFR=\" NFR; exit mis}" $1
