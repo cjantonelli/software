@@ -93,3 +93,18 @@ For example,
     7 matches 2 deltas 3 records
     max delta 0.01 at record 2 column 2
     next largest delta 0.00159 at record 3 column 3
+    
+### profile.do
+
+Script to set a proxy for stata to use to access the Internet if running on a Great Lakes
+compute node.  This is not needed when running on a login node, and in fact setting
+a proxy there will cause Internet access to fail.  This script obviates users having to
+comment and uncomment the proxy statements in their scripts depending on where
+they are running.
+
+Put this script into a file named profile.do in one of stata's system directories (use the
+stata command "sysdir" to list them) and it will be run automatically whenever stata
+starts.
+
+This script uses the name of the node it is running on to determine if it is running on
+a compute node, and hence is fragile.  Caveat utilitor.
